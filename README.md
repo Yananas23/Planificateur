@@ -16,7 +16,8 @@ Ce programme est un planificateur de tâches en ligne de commande qui permet de 
 Le programme fournit les fonctions suivantes :
 
 * `read_user_input` : lit l'entrée utilisateur pour la commande, l'argument, le délai et le nombre d'itérations
-* `execute_command` : exécute la commande saisie par l'utilisateur avec l'argument, le délai et le nombre d'itérations spécifiés
+* `execute_command_aux` : exécute la commande saisie par l'utilisateur avec l'argument, le délai et le nombre d'itérations spécifiés
+* `execute_command` : lance les executions des différentes commandes
 * `create_file` : crée un nouveau fichier de log et renvoie un pointeur vers celui-ci
 * `check_end_file` : vérifie si le fichier de fin de boucle existe
 * `read_file_input` : lit le fichier d'entrée et exécute les commandes qui y sont contenues

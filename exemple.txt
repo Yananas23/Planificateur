@@ -2,4 +2,4 @@
 # Pour q'une commande soit executer dans se fichier il faut écrire entre guillemets le chemin vers la commande, les arguments puis en dehors des guillemets le delay entre 2 exécutions puis le nombre d'éxécution
 
 "/bin/ls ." 2 2
-"/bin/echo test" 4 -1
+"/bin/echo test" 4 3

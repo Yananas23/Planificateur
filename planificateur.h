@@ -21,7 +21,7 @@
     Command est une structure contenant la commande, l'argument, le délai et le nombre d'itérations
 */
 typedef struct {
-    char command[10];
+    char command[100];
     char argument[100];
     int delay;
     int iterations;
@@ -41,7 +41,7 @@ typedef struct {
 
     \return void : ne renvoie rien
  */
-void read_user_input(char *command, char *argument, int *delay, int *iterations, char *file_name);
+void read_user_input(Command cmd, char *file_name);
 
 
 /**
@@ -57,7 +57,23 @@ void read_user_input(char *command, char *argument, int *delay, int *iterations,
 
     \return void : ne renvoie rien
  */
-void execute_command(char *command, char *argument, int delay, int iterations, char *file_name);
+void execute_command_aux(Command cmd, char *file_name);
+
+
+/**
+    \brief : Crée un nouveau processus et exécute la commande saisie par l'utilisateur avec l'argument, le délai et le nombre d'itérations spécifiés dans ce processus.
+
+    \param command : command : une chaîne de caractères contenant la commande à exécuter
+    \param argument : argument : une chaîne de caractères contenant l'argument à passer à la commande
+    \param delay : delay : un entier contenant le délai entre chaque itération
+    \param iterations : iterations : un entier contenant le nombre d'itérations à exécuter
+    \param log : log : une chaîne de caractères contenant le nom du fichier de logs
+
+    \remark : La fonction utilise la fonction fork() pour créer un nouveau processus et appelle execute_command_aux() dans ce processus pour exécuter la commande.
+
+    \return void : ne renvoie rien
+*/
+void execute_command(Command* cmd, int nb_cmd,  char *file_name);
 
 
 /**
@@ -65,7 +81,7 @@ void execute_command(char *command, char *argument, int delay, int iterations, c
  *
  * @return char* : le nom du fichier créé
  */
-char* create_file();
+char* create_log();
 
 
 /**
@@ -83,7 +99,7 @@ int check_end_file(char *path);
  * @param file_path : le chemin du fichier d'entrée
  * @param file_name : une chaîne de caractères pour stocker le nom du fichier de logs
  */
-void read_file_input(char *file_path, char *file_name);
+void read_file_input(Command cmd, char *file_path, char *log);
 
 
 /**
@@ -94,7 +110,6 @@ void read_file_input(char *file_path, char *file_name);
  * @return int : 1 si la ligne a été correctement parsée, 0 sinon
  */
 int parse(const char *line, Command *cmd);
-
 
 
 #endif
