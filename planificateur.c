@@ -7,11 +7,14 @@
 #include <unistd.h>
 
 #include "planificateur.h"
+#include "log.h"
+#include "reader.h"
 
 
 int main()
 {
     Command cmd;
+    CommandList cmd_list;
 
     char *log = create_log();
 
@@ -21,188 +24,25 @@ int main()
 
     if (choice == 1)
     {
-        read_user_input(cmd, log);
+        cmd_list = read_user(cmd, log);
     }
     else if (choice == 2)
     {
         char file_path[100];
         printf("Entrez le chemin d'accès au fichier texte : ");
         scanf("%s", file_path);
-        read_file_input(cmd, file_path, log);
+        cmd_list = read_file(cmd, file_path, log);
     }
     else
     {
         printf("Choix invalide.\n");
     }
 
+    execute_command(cmd_list, log);
     free(log);
     return 0;
 }
 
-
-int parse(const char *line, Command *cmd)
-{
-    // Recherche de la commande, du délai, des itérations et de l'argument à l'aide de sscanf
-    int n = sscanf(line, "\"%9s %99[^\"]\" %d %d", cmd->command, cmd->argument, &cmd->delay, &cmd->iterations);
-    if (n == 4)
-    {
-        // Si les 4 valeurs ont été correctement lues, renvoie 1
-        return 1;
-    }
-    else
-    {
-        // Si une erreur s'est produite, renvoie 0
-        return 0;
-    }
-}
-
-
-void read_file_input(Command cmd, char *file_path, char *log)
-{
-    FILE *file = fopen(log, "a");
-    if (file == NULL)
-    {
-        perror("Erreur : impossible d'ouvrir le fichier");
-        exit(1);
-    }
-
-    FILE *input_file = fopen(file_path, "r");
-    if (input_file == NULL)
-    {
-        perror("Erreur : impossible d'ouvrir le fichier d'entrée");
-        exit(1);
-    }
-    fprintf(file, "Fichier d'entrée : %s\n\n", file_path);
-    char line[500];
-    int line_number = 0;
-    Command *commands = NULL;
-    int num_commands = 0;
-
-    while (fgets(line, sizeof(line), input_file) != NULL)
-    {
-        line_number++;
-
-        if (line[0] == '#' || line[0] == '\n' || line[0] == '\r' || line[0] == '\t')
-        {
-            if (line[0] == '#')
-            {
-                fprintf(file, "\t%s\n", line);
-            }
-            continue;
-        }
-        else if (line[0] == '\"')
-        {
-            if (parse(line, &cmd))
-            {
-                commands = realloc(commands, (num_commands + 1) * sizeof(Command));
-                commands[num_commands++] = cmd;
-                fprintf(file, "Commande %d : %s %s %d %d\n", num_commands, cmd.command, cmd.argument, cmd.delay, cmd.iterations);
-            }
-            else
-            {
-                fprintf(file, "Erreur : entrée invalide : %s", line);
-            }
-        }
-        else
-        {
-            fprintf(file, "\n%s", line);
-        }
-    }
-
-    fprintf(file, "\n");
-    fclose(file);
-
-    // Executes les commandes lues à partir du fichier
-    execute_command(commands, num_commands, log);
-    
-    free(commands);
-    fclose(input_file);
-}
-
-
-char *create_log()
-{
-    time_t now = time(NULL);
-    struct tm *current_time = localtime(&now);
-
-    char time_str[16];
-    strftime(time_str, sizeof(time_str), "%d%m%y_%H%M%S", current_time);
-
-    char *log = malloc(50);
-    if (!log)
-    {
-        printf("Erreur : impossible d'allouer de la mémoire pour le nom de fichier\n");
-        exit(1);
-    }
-
-    // Créée un fichier de log avec le nom formaté
-    strcpy(log, "Log/");
-    strcat(log, time_str);
-    strcat(log, ".txt");
-
-    // Ouvre le fichier en mode append
-    FILE *file = fopen(log, "a");
-    if (file == NULL)
-    {
-        printf("Erreur : impossible de créer le fichier\n");
-        free(log);
-        exit(1);
-    }
-
-    fprintf(file, "Fichier de logs créé le %s\n\n", time_str);
-    fclose(file);
-
-    return log;
-}
-
-
-void read_user_input(Command cmd, char *log)
-{
-    FILE *file = fopen(log, "a");
-    if (file == NULL)
-    {
-        perror("Erreur : impossible d'ouvrir le fichier");
-        exit(1);
-    }
-
-    printf("Entrez la commande : ");
-    if (scanf(" %99[^\n]", cmd.command) != 1)
-    {
-        fprintf(file, "Erreur : commande invalide\n");
-        exit(1);
-    }
-
-    printf("Entrez l'argument : ");
-    if (scanf(" %99[^\n]", cmd.argument) != 1)
-    {
-        fprintf(file, "Erreur : argument invalide\n");
-        exit(1);
-    }
-
-    printf("Entrez le délai en secondes : ");
-    if (scanf(" %d", &cmd.delay) != 1 || cmd.delay <= 0)
-    {
-        fprintf(file, "Erreur : le délai doit être un nombre entier positif\n");
-        exit(1);
-    }
-
-    printf("Entrez le nombre d'itérations : ");
-    if (scanf(" %d", &cmd.iterations) == 0)
-    {
-        fprintf(file, "Erreur : le nombre d'itérations doit être différent de 0\n");
-        exit(1);
-    }
-    if (cmd.iterations < 0)
-    {
-        fprintf(file, "Le programme s'arrêtera lorsqu'un fichier .tmp sera trouvé dans le dossier Log/\n\n");
-        fopen("end.tmp", "w");
-    }
-
-    fclose(file);
-    Command *command = malloc(sizeof(Command));
-    command[0] = cmd;
-    execute_command(command, 1, log);
-}
 
 
 int check_end_file(char *path)
@@ -248,7 +88,7 @@ void execute_command_aux(Command cmd, char *log)
         exit(1);
     }
     
-    sleep(cmd.delay)
+    sleep(cmd.delay);
     // Enregistrer l'heure de la première exécution
     time_t start_time = time(NULL);
 
@@ -280,7 +120,7 @@ void execute_command_aux(Command cmd, char *log)
         pid_t pid = fork();
         if (pid == -1)
         {
-            fprintf(file, "Erreur : échec de la création du processus fils\n");
+            error_log(log, 8, "");
             return;
         }
         else if (pid == 0)
@@ -294,22 +134,20 @@ void execute_command_aux(Command cmd, char *log)
             if (status == -1)
             {
                 file = fopen(log, "a");
-                fprintf(file, "Erreur : échec de l'exécution de la commande\n\n");
+                error_log(log, 9, "");
                 fclose(file);
                 exit(1);
             }
         }
         else
         {
-            // Code exécuté par le processus père (father)
+            // Code exécuté par le processus père
             int status;
             waitpid(pid, &status, 0);
             if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
             {
                 // Réouvrir le fichier dans le processus père pour écrire le message d'erreur
-                file = fopen(log, "a");
-                fprintf(file, "Erreur : la commande s'est terminée avec le message d'erreur suivant :\n%s\n\n", strerror(WEXITSTATUS(status)));
-                fclose(file);
+                error_log(log, 10, strerror(WEXITSTATUS(status)));
                 exit(1);
             }
 
@@ -342,12 +180,12 @@ void execute_command_aux(Command cmd, char *log)
 }
 
 
-void execute_command(Command* cmd, int nb_cmd, char *log) {
-    for(int i = 0; i < nb_cmd; i++){
+void execute_command(CommandList cmd, char *log) {
+    for(int i = 0; i < cmd.nb_cmd; i++){
         pid_t mon_pid;
         mon_pid = fork();
         if(mon_pid == 0){
-            execute_command_aux(cmd[i], log);
+            execute_command_aux(cmd.tasks[i], log);
             exit(0);
         }
     }   

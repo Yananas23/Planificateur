@@ -14,34 +14,39 @@
 */
 
 
+typedef struct Date{
+    int day;
+    int month;
+    int year;
+    int hour;
+    int minute;
+    int second;
+    long int timestamp;
+} Date;
+
+
 /**
     \struct Command
     \brief Structure pour stocker les informations de la commande saisie par l'utilisateur
 
-    Command est une structure contenant la commande, l'argument, le délai et le nombre d'itérations
+    Command est une structure contenant la commande, l'argument, le délai,
+    le nombre d'itérations et la date de première exécution si besoin
 */
-typedef struct {
+typedef struct Command{
     char command[100];
     char argument[100];
-    int delay;
     int iterations;
+    long int delay;
+    Date start;
 } Command;
 
 
-/**
-    \brief : lit l'entrée utilisateur pour la commande, l'argument, le délai et le nombre d'itérations
+typedef struct CommandList{
+    Command *tasks;
+    int nb_cmd;
+} CommandList;
 
-    \param command : command : une chaîne de caractères pour stocker la commande saisie par l'utilisateur
-    \param argument : argument : une chaîne de caractères pour stocker l'argument saisi par l'utilisateur
-    \param delay : delay : un pointeur vers un entier pour stocker le délai saisi par l'utilisateur
-    \param iterations : iterations : un pointeur vers un entier pour stocker le nombre d'itérations saisi par l'utilisateur
-    \param file_name : file_name : une chaîne de caractères pour stocker le nom du fichier de logs
 
-    \remark : La fonction vérifie que l'entrée utilisateur est valide avant de stocker les valeurs dans les paramètres
-
-    \return void : ne renvoie rien
- */
-void read_user_input(Command cmd, char *file_name);
 
 
 /**
@@ -73,15 +78,8 @@ void execute_command_aux(Command cmd, char *file_name);
 
     \return void : ne renvoie rien
 */
-void execute_command(Command* cmd, int nb_cmd,  char *file_name);
+void execute_command(CommandList cmd,  char *file_name);
 
-
-/**
- * @brief Crée un nouveau fichier de log et renvoie un pointeur vers celui-ci.
- *
- * @return char* : le nom du fichier créé
- */
-char* create_log();
 
 
 /**
@@ -92,24 +90,6 @@ char* create_log();
  */
 int check_end_file(char *path);
 
-
-/**
- * @brief Lit le fichier d'entrée et exécute les commandes qui y sont contenues.
- *
- * @param file_path : le chemin du fichier d'entrée
- * @param file_name : une chaîne de caractères pour stocker le nom du fichier de logs
- */
-void read_file_input(Command cmd, char *file_path, char *log);
-
-
-/**
- * @brief Parse une ligne de commande et stocke les informations dans une structure Command.
- *
- * @param line : la ligne de commande à parser
- * @param cmd : un pointeur vers une structure Command pour stocker les informations
- * @return int : 1 si la ligne a été correctement parsée, 0 sinon
- */
-int parse(const char *line, Command *cmd);
 
 
 #endif

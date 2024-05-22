@@ -1,0 +1,29 @@
+Fichier de logs créé le 160424_152232
+
+Fichier d'entrée : exemple.txt
+
+	# Ce fichier execute 2 fois un "ls" puis un "echo" du mot `test` un nombre de fois infini
+
+	# Pour q'une commande soit executer dans se fichier il faut écrire entre guillemets le chemin vers la commande, les arguments puis en dehors des guillemets le delay entre 2 exécutions puis le nombre d'éxécution
+
+Commande 1 : /bin/ls . 2 2
+Commande 2 : /bin/echo test 4 3
+
+
+Execution numéro 1 de la commande "/bin/ls" avec l'argument "."
+
+Execution numéro 1 de la commande "/bin/echo" avec l'argument "test"
+
+Execution numéro 2 de la commande "/bin/ls" avec l'argument "."
+
+//
+Fin de l'exécution de la commande "/bin/ls" avec l'argument "."
+//
+
+Execution numéro 2 de la commande "/bin/echo" avec l'argument "test"
+
+Execution numéro 3 de la commande "/bin/echo" avec l'argument "test"
+
+//
+Fin de l'exécution de la commande "/bin/echo" avec l'argument "test"
+//

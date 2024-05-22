@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/User/Documents/GitHub/Planificateur",
-      "program": "c:/Users/User/Documents/GitHub/Planificateur/build/Debug/outDebug",
+      "cwd": "c:/Users/User/Documents/GitHub/Archy sys/Planificateur",
+      "program": "c:/Users/User/Documents/GitHub/Archy sys/Planificateur/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -1,0 +1,12 @@
+1 : impossible d'ouvrir le fichier de logs
+2 : impossible d'ouvrir le fichier d'entrée
+
+3 : le délai doit être un nombre entier positif
+4 : le nombre d'itérations doit être différent de 0
+5 : argument(s) invalide
+6 : commande invalide
+7 : entrée invalide :
+
+8 : échec de la création du processus fils
+9 : échec de l'exécution de la commande
+10 : la commande s'est terminée avec le message d'erreur suivant :

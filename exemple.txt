@@ -1,5 +1,7 @@
 # Ce fichier execute 2 fois un "ls" puis un "echo" du mot `test` un nombre de fois infini
-# Pour q'une commande soit executer dans se fichier il faut écrire entre guillemets le chemin vers la commande, les arguments puis en dehors des guillemets le delay entre 2 exécutions puis le nombre d'éxécution
+# Pour qu'une commande soit executer dans se fichier il faut écrire entre guillemets le chemin vers la commande, les arguments puis en dehors des guillemets le delay entre 2 exécutions puis le nombre d'éxécution
 
-"/bin/ls ." 2 2
-"/bin/echo test" 4 3
+"/bin/ls ." 2 0-0-0 0:0:10
+=> 05-02-2024 02:02:02
+"/bin/echo test" 4 0-0-0 0:0:10
+=> NULL
