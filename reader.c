@@ -48,12 +48,7 @@ void parse_cmd(const char *line, Command *cmd, char *log)
     int n = sscanf(line, "\"%20s %99[^\"]\" %d %s", cmd->command, cmd->argument, &cmd->iterations, c_time);
     formatage(c_time, d);
     cmd->delay = timestamps(d);
-    if (n == 4)
-    {
-        // fprintf(file, "Commande %d : %s %s %ld %d\n", commands.nb_cmd, cmd.command,
-        //  cmd.argument, cmd.delay, cmd.iterations);    
-    }
-    else
+    if (n != 4)
     {
         error_log(log, 7, (char*)line);
     }
@@ -70,8 +65,8 @@ void parse_date(const char *line, Command *cmd, char *log)
         {
             cmd->start.timestamp = 0;
         }
-        // fprintf(file, "Date de début : %d-%d-%d %d:%d:%d\n", cmd.start.day, cmd.start.month, cmd.start.year,
-        // cmd.start.hour, cmd.start.minute, cmd.start.second);
+        
+        date_log(log, cmd->start);
     }
     else
     {
@@ -89,12 +84,11 @@ FILE *open_file(char *file_path)
         exit(1);
     }
     
-    // fprintf(file, "Fichier d'entrée : %s\n\n", file_path); // a transcrire dans log.c
     return file;
 }
 
 
-CommandList read_file(Command cmd, char *file_path, char *log_path) //a refaire pour lire les dates
+CommandList read_file(Command cmd, char *file_path, char *log_path)
 {
 
     char line[500];
@@ -103,14 +97,8 @@ CommandList read_file(Command cmd, char *file_path, char *log_path) //a refaire 
     commands.tasks = NULL;
     commands.nb_cmd = 0;
 
-    FILE *log = fopen(log_path, "a");
-    if (log == NULL)
-    {
-        perror("Erreur : impossible d'ouvrir le fichier de logs");
-        exit(1);
-    }
-
     FILE *input_file = open_file(file_path);
+    file_log(log_path, file_path);
 
     while (fgets(line, sizeof(line), input_file) != NULL)
     {
@@ -119,7 +107,7 @@ CommandList read_file(Command cmd, char *file_path, char *log_path) //a refaire 
 
         if (token == '#')
         {
-            fprintf(log, "\t%s\n", line); // a transcrire dans log.c
+            commentaire(log_path, line);
         }
         else if (token == '\"')
         {
@@ -127,6 +115,7 @@ CommandList read_file(Command cmd, char *file_path, char *log_path) //a refaire 
             commands.tasks = realloc(commands.tasks, (commands.nb_cmd + 1) * sizeof(CommandList));
             commands.tasks[commands.nb_cmd] = cmd;
             commands.nb_cmd += 1;
+            command(log_path, cmd, commands.nb_cmd);
         }
         else if (token == '=')
         {
@@ -134,12 +123,11 @@ CommandList read_file(Command cmd, char *file_path, char *log_path) //a refaire 
         }
         else
         {
-            // fprintf(file, "\n%s", line);
+            error_log(log_path, 11, line);
         }
     }
 
-    fprintf(log, "\n");
-    fclose(log);
+    space_line(log_path);
     
     free(commands.tasks);
     fclose(input_file);
@@ -151,7 +139,6 @@ CommandList read_file(Command cmd, char *file_path, char *log_path) //a refaire 
 
 CommandList read_user(Command cmd, char *log_path)
 {
-
     ask_command(cmd, log_path);
 
     ask_arguments(cmd, log_path);
@@ -162,7 +149,7 @@ CommandList read_user(Command cmd, char *log_path)
     
     ask_date(cmd, log_path);
 
-    // fclose(file);
+    command(log_path, cmd, 0);
 
     CommandList commands;
     commands.tasks = &cmd;
@@ -205,7 +192,7 @@ void ask_iterations(Command cmd, char *log)
     }
     if (cmd.iterations < 0)
     {
-        // fprintf(file, "Le programme s'arrêtera lorsqu'un fichier .tmp sera trouvé dans le dossier Log/\n\n");
+        infini_log(log);
         fopen("end.tmp", "w");
     }
 }
@@ -240,10 +227,10 @@ void ask_date(Command cmd, char *log)
     {
         printf("Entrez la date de début d'éxécution au format DD-MM-YYYY hh:mm:ss : ");
         char *c_time = malloc(30);
-        // truc de log pour ecrire la date
         Date d = {2024, 5, 7, 12, 30, 0, 0};
         scanf(" %s", c_time);
         formatage(c_time, d);
+        date_log(log, d);
         cmd.start = d;
     }
     else if (choice == 2)

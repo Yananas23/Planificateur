@@ -10,3 +10,5 @@
 8 : échec de la création du processus fils
 9 : échec de l'exécution de la commande
 10 : la commande s'est terminée avec le message d'erreur suivant :
+
+11 : entrée inconnu :

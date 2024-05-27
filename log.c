@@ -46,7 +46,6 @@ char *create_log()
     return log;
 }
 
-//voir si c'est mieux d'ouvrir le log dans chaque fonction ou de le faire dans la fonction "mère" read_file et read_cmd
 
 FILE *open_log(char *log)
 {
@@ -58,6 +57,7 @@ FILE *open_log(char *log)
     }
     return file;
 }
+
 
 int parse_code(char *line)
 {
@@ -77,7 +77,6 @@ char *get_error(int error_code)
     }
 
     int line = 0;
-    // exemple => "3 : Erreur"
     char line_buffer[150];
     char extract[150];
     
@@ -97,6 +96,7 @@ char *get_error(int error_code)
     return error;
 }
 
+
 void error_log(char *log, int error_code, char *info)
 {
     FILE *file = open_log(log);
@@ -106,4 +106,74 @@ void error_log(char *log, int error_code, char *info)
     if (strcmp(info, "") != 0){
         fprintf(file, " %s\n", info);
     }
+    fclose(file);
+}
+
+
+void date_log(char *log, Date d)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "Date de première exécution: %d-%d-%d %d:%d:%d\n", d.day, d.month, d.year, d.hour, d.minute, d.second);
+    fclose(file);
+}
+
+
+void infini_log(char *log)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "\tLe programme s'arrêtera lorsqu'un fichier .tmp sera trouvé dans le dossier Log/\n\n");
+    fclose(file);
+}
+
+
+void command(char *log, Command cmd, int nb_cmd)
+{
+    FILE *file = open_log(log);
+    if (nb_cmd != 0){
+        fprintf(file, "Commande numéro %d : \"%s %s\" %d fois, avec un intervale de %lds\n", nb_cmd, cmd.command, cmd.argument, cmd.iterations, cmd.delay);
+    }
+    else{
+        fprintf(file, "Commande : \"%s %s\" %d fois, avec un intervale de %lds\n", cmd.command, cmd.argument, cmd.iterations, cmd.delay);
+    }
+    fclose(file);
+}
+
+
+void commentaire(char *log, char* comm)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "\t%s\n", comm);
+    fclose(file);
+}
+
+
+void space_line(char *log)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "\n");
+    fclose(file);
+}
+
+
+void file_log(char *log, char *file_path)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "Fichier d'entrée : %s\n\n", file_path);
+    fclose(file);
+}
+
+
+void execute_log(char *log, int iteration, Command cmd)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "\nExecution numéro %d de la commande \"%s\" avec l'argument \"%s\"\n", iteration, cmd.command, cmd.argument);
+    fclose(file);
+}
+
+
+void end_execute(char *log, Command cmd)
+{
+    FILE *file = open_log(log);
+    fprintf(file, "\n//\nFin de l'exécution de la commande \"%s\" avec l'argument \"%s\"\n//\n", cmd.command, cmd.argument);
+    fclose(file); 
 }

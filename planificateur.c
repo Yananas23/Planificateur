@@ -126,9 +126,7 @@ void execute_command_aux(Command cmd, char *log)
         else if (pid == 0)
         {
             // Code exécuté par le processus fils (son)
-            fprintf(file, "\nExecution numéro %d de la commande \"%s\" avec l'argument \"%s\"\n", i + 1, cmd.command, cmd.argument);
-            fclose(file); // fermer le fichier dans le processus fils
-
+            execute_log(log, i+1, cmd);
 
             int status = execl(cmd.command, cmd.command, cmd.argument, (char *)NULL);
             if (status == -1)
@@ -171,9 +169,7 @@ void execute_command_aux(Command cmd, char *log)
             }
             if (iterer == 0)
             {
-                file = fopen(log, "a");
-                fprintf(file, "\n//\nFin de l'exécution de la commande \"%s\" avec l'argument \"%s\"\n//\n", cmd.command, cmd.argument);
-                fclose(file);
+                end_execute(log, cmd);
             }
         }
     }
